@@ -1,39 +1,44 @@
-package config
+package configuration
 
 import (
 	"encoding/json"
 	dblayer "eventsbook/dbLayer"
-	"log"
+	"fmt"
 	"os"
 )
 
-const (
-	DATACONNECTION    = dblayer.MongoDb
+var (
+	DATATYPES         = dblayer.MONGODB
 	DEFAULTCONNECTION = "mongodb://127.0.0.1"
-	RESTCONNECTION    = "localhost:8585"
+	RESTAPI           = "localhost:8181"
+	TLSAPI            = "localhost:8282"
 )
 
 type Config struct {
-	DatabaseConnection dblayer.DataType `json:"databaseonnection"`
-	DefaultConnection  string           `json:"defaultconnection"`
-	RESTCONNECTION     string            `json:"restconnection"`
+	DataType          dblayer.DATATYPE `json:"datatype"`
+	DefaultConnection string           `json:"defaultconnection"`
+	RestApi           string           `json:"rest_api"`
+	TlsApi            string           `json:"tls_api"`
 }
 
 func NewConfig(connection string) (*Config, error) {
 	config := &Config{
-      DATACONNECTION,
-	  DEFAULTCONNECTION,
-	  RESTCONNECTION,
+		DATATYPES,
+		DEFAULTCONNECTION,
+		RESTAPI,
+		TLSAPI,
 	}
 	fileName, err := os.Open(connection)
 	if err != nil {
-		log.Fatal("cannot open connection")
-		return config,err
+		fmt.Println("cannot open connection, can still continue")
+		return config, err
 	}
 	defer fileName.Close()
 	decode := json.NewDecoder(fileName)
 	err = decode.Decode(&config)
+	if err != nil {
+		fmt.Println("cannot decode file")
+	}
 	return config, err
-	
-}
 
+}

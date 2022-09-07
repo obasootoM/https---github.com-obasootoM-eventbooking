@@ -5,14 +5,14 @@ import (
 	"eventsbook/persistence"
 )
 
-type DataType string
+type DATATYPE string
 const(
-   MongoDb DataType = "mongodb"
+   MONGODB DATATYPE = "mongodb"
 )
 
-func NewPesistent(connection string,option DataType) (persistence.Database, error) {
+func NewPersistent(option DATATYPE, connection string) (persistence.Database, error) {
     switch option {
-	case MongoDb:
+	case MONGODB:
 		return database.NewMongo(connection)
 	}
 	return nil, nil

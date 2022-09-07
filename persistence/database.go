@@ -5,9 +5,9 @@ import "gopkg.in/mgo.v2/bson"
 
 type Database interface {
 	AddEvent(Event) ([]byte, error) 
-	FindEvent([]byte) (error, Event)
-	FindEventByName(string) (error, Event)
-	FindAllEventAvailable() (error, []Event)
+	FindEvent([]byte) (Event, error)
+	FindEventByName(string) (Event, error)
+	FindAllEventAvailable() ([]Event, error)
 }
 
 type Event struct {
