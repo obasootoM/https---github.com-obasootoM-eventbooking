@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/hex"
 	"encoding/json"
+	"eventsbook/lib/mekafka"
 	"eventsbook/persistence"
 	"fmt"
 	"net/http"
@@ -14,10 +15,12 @@ import (
 
 type Service struct {
 	data persistence.Database
+	produce  mekafka.EventProducer
 }
-func NewService(database persistence.Database) *Service {
+func NewService(database persistence.Database, produce mekafka.EventProducer) *Service {
 	return &Service{
 		data: database,
+		produce: produce,
 	}
 }
 func (s *Service) findEvent(w http.ResponseWriter,r *http.Request) {
@@ -93,9 +96,9 @@ func (s *Service) findAllEvent(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func Server(endpoint,tls string, data persistence.Database) (chan error, chan error) {
+func Server(endpoint,tls string, data persistence.Database, produce mekafka.EventProducer) (chan error, chan error) {
 	r := mux.NewRouter()
-	handler := NewService(data)
+	handler := NewService(data, produce)
 	serviceRouter := r.PathPrefix("/event").Subrouter()
 	serviceRouter.Methods("POST").Path("[searchcriteria]/search").HandlerFunc(handler.addEvent)
 	serviceRouter.Methods("GET").Path("/findall").HandlerFunc(handler.findAllEvent)
